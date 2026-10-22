@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session Detail — HERTS Doctor Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/patient-portal.css">
+<link rel="stylesheet" href="assets/doctor-portal.css">
+</head>
+<body>
+<main class="page dr"><div class="dp" id="root">
+  <p class="crumbs"><a href="doctor-patients.html">Patients</a> <span>/</span> <a id="c-p" href="doctor-patients.html">Patient</a> <span>/</span> Session Detail</p>
+  <div class="titlebar"><div><h1>Session Detail</h1><p class="lede">Session <b id="sid"></b> · Prototype data</p></div><a class="btn ghost" id="back1" href="doctor-patients.html">← Back to Patient Detail</a></div>
+  <div id="body">
+  <section class="dcard" style="margin-top:22px" aria-labelledby="si-t">
+    <div class="head"><div><h2 id="si-t">Session Information</h2><p class="sub">Summary of this measurement session.</p></div><span class="tag dark">Prototype Data</span></div>
+    <dl class="infof sinfo" id="info"></dl>
+  </section>
+  <section class="dcard" style="margin-top:22px" aria-labelledby="eit-t">
+    <div class="head"><div><h2 id="eit-t">Electrical Impedance Tomography (EIT)</h2><p class="sub">EIT visualizes thoracic impedance distribution measured through boundary electrodes.</p></div><span class="tag dark" id="eit-id"></span></div>
+    <div class="sviz">
+      <div class="eitbox"><span class="tag dark">Illustrative Placeholder</span><canvas id="eit" width="760" height="760" role="img" aria-label="Illustrative EIT image: a circular chest cross-section coloured from purple (low) to yellow (high) with 16 numbered boundary electrodes"></canvas></div>
+      <div class="sv">
+        <h3>Relative Impedance Scale</h3>
+        <div class="sc"><div class="gr" role="img" aria-label="Scale from 0% lowest (purple) to 100% highest (yellow)"></div><div class="lb"><span>100% — Highest</span><span>50% — Mid-range</span><span>0% — Lowest</span></div></div>
+        <div class="gbox">EIT visualizes thoracic impedance distribution measured through boundary electrodes.</div>
+        <p class="el"><i></i>16 boundary electrodes (E1–E16)</p>
+        <p class="mini">Scale is illustrative. Not a reconstruction from a real patient measurement.</p>
+      </div>
+    </div>
+  </section>
+  <section class="dcard" style="margin-top:22px" aria-labelledby="ecg-t">
+    <div class="head"><div><h2 id="ecg-t">Electrocardiogram (ECG)</h2><p class="sub">Waveform preview for this session.</p></div><span class="tag dark">Placeholder</span></div>
+    <div class="ecgbox"><span class="tag dark">Illustrative Placeholder</span><div id="ecg" role="img" aria-label="Illustrative ECG waveform on a dark grid showing five repeating heartbeats"></div><div class="ax"><span>◀ Amplitude</span><span>Time ▶</span></div></div>
+  </section>
+  <section class="dcard about-d" aria-labelledby="ab-t"><img src="assets/icon-info.png" alt=""><div><b id="ab-t">About This Session</b><p>This page shows prototype data for the selected session. The EIT image and ECG waveform are illustrative placeholders, not measurements from a real patient or device, and should not be interpreted as a diagnosis.</p></div></section>
+  <p style="margin-top:14px"><a class="btn grey" id="back2" href="doctor-patients.html">← Back to Patient Detail</a></p>
+  </div>
+</div></main>
+<script src="assets/doctor.js"></script>
+<script>
+HD.shell("patients");
+var $=HD.$, E=HD.esc, id=HD.param("session")||"SES-018", s=HD.session(id);
+if(!s){
+  $("#sid").textContent=id; $("#body").innerHTML='<section class="dcard msg" style="margin-top:22px"><h2>Session not found</h2><p>This session is not linked to your patients. Please go back and choose a session from the list.</p><a class="btn" href="doctor-patients.html">Back to Patients</a></section>';
+  $(".crumbs").innerHTML='<a href="doctor-patients.html">Patients</a> <span>/</span> Session Detail';
+}else{
+  var p=HD.patient(s[1]), pd="doctor-patient-detail.html?patient="+p[0];
+  document.title="Session "+s[0]+" — HERTS Doctor Portal";
+  $("#sid").textContent=s[0]; $("#eit-id").textContent=s[0];
+  $("#c-p").textContent=p[1]; $("#c-p").href=pd; $("#back1").href=pd; $("#back2").href=pd;
+  var rec=s[5]==="active"?"In progress":"Available";
+  $("#info").innerHTML=[["Patient",E(p[1])+"<small>"+p[0]+"</small>"],["Session ID",s[0]],["Date & Start Time",HD.date(s[2])+", "+HD.time(s[3])],["Duration",s[4]==null?"02:14":s[4]+" Min"],["Session Status",HD.badge(s[5])],["Recording Status",rec]].map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'}).join("");
+
+  /* deterministic pseudo-random from session number so each session looks slightly different */
+  var n=+s[0].slice(4), r1=((n*37)%100)/100, r2=((n*61)%100)/100;
+  var stops=[[0,[68,1,84]],[.25,[59,82,139]],[.5,[33,144,140]],[.75,[93,200,99]],[1,[253,231,37]]];
+  function cmap(v){v=Math.max(0,Math.min(1,v));for(var i=1;i<stops.length;i++){if(v<=stops[i][0]){var a=stops[i-1],b=stops[i],t=(v-a[0])/(b[0]-a[0]);return [0,1,2].map(function(k){return Math.round(a[1][k]+(b[1][k]-a[1][k])*t)})}}return stops[4][1]}
+  var c=$("#eit"), g=c.getContext("2d"), W=c.width, C=W/2, R=W*.38;
+  var img=g.createImageData(W,W), d1=[-.28+r1*.1,.02+r2*.1], d2=[.62-r2*.1,.42+r1*.1];
+  for(var y=0;y<W;y++)for(var x=0;x<W;x++){
+    var u=(x-C)/R, v=(y-C)/R, o=(y*W+x)*4;
+    if(u*u+v*v>1){img.data[o+3]=0;continue}
+    var a=(u-d1[0])*(u-d1[0])+(v-d1[1])*(v-d1[1]), b=(u-d2[0])*(u-d2[0])+(v-d2[1])*(v-d2[1]);
+    var val=.68-.55*Math.exp(-a/.05)+.42*Math.exp(-b/.03)-.1*v*v;
+    var col=cmap(val); img.data[o]=col[0];img.data[o+1]=col[1];img.data[o+2]=col[2];img.data[o+3]=255;
+  }
+  g.putImageData(img,0,0);
+  g.lineWidth=3;g.strokeStyle="#3E444D";g.beginPath();g.arc(C,C,R,0,7);g.stroke();
+  g.font="bold 20px 'IBM Plex Sans',sans-serif";g.textAlign="center";g.textBaseline="middle";
+  for(var k=0;k<16;k++){
+    var ang=-Math.PI/2+k*Math.PI/8, ex=C+R*Math.cos(ang), ey=C+R*Math.sin(ang);
+    g.fillStyle="#f00";g.strokeStyle="#fff";g.lineWidth=3;g.beginPath();g.arc(ex,ey,13,0,7);g.fill();g.stroke();
+    g.fillStyle="#071426";g.fillText(k+1,C+(R+42)*Math.cos(ang),C+(R+42)*Math.sin(ang));
+  }
+
+  /* ECG placeholder */
+  var w=1000,h=170,beat=185,path="M0 95";
+  for(var x0=-40+(n%3)*10;x0<w;x0+=beat){
+    path+=" L"+x0+" 95 Q"+(x0+14)+" 78 "+(x0+30)+" 95 L"+(x0+50)+" 95 L"+(x0+56)+" 105 L"+(x0+64)+" 22 L"+(x0+72)+" 125 L"+(x0+78)+" 95 L"+(x0+100)+" 95 Q"+(x0+122)+" 68 "+(x0+146)+" 95 L"+(x0+beat)+" 95";
+  }
+  var grid="";for(var gx=0;gx<=w;gx+=50)grid+='<path d="M'+gx+' 0V'+h+'"/>';for(var gy=0;gy<=h;gy+=34)grid+='<path d="M0 '+gy+'H'+w+'"/>';
+  $("#ecg").innerHTML='<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" aria-hidden="true" style="height:190px"><g stroke="#13283d" stroke-width="1" fill="none">'+grid+'</g><path d="'+path+'" fill="none" stroke="#3DD6D0" stroke-width="2.2" stroke-linejoin="round" vector-effect="non-scaling-stroke" clip-path="inset(0)"/></svg>';
+}
+</script>
+</body>
+</html>

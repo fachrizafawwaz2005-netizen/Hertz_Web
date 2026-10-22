@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patient Detail — HERTS Doctor Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/patient-portal.css">
+<link rel="stylesheet" href="assets/doctor-portal.css">
+</head>
+<body>
+<main class="page dr"><div class="dp" id="root">
+  <p class="crumbs"><a href="doctor-patients.html">Patients</a> <span>/</span> Patient Detail</p>
+  <div class="titlebar"><div><h1 id="name"></h1><p class="lede">Patient ID: <b id="pid"></b></p></div><a class="btn ghost" href="doctor-patients.html">← Back to Patients</a></div>
+  <section class="dcard" style="margin-top:22px" aria-labelledby="pi-t">
+    <div class="head"><div><h2 id="pi-t">Patient Information</h2><p class="sub">Linked to your account.</p></div><span class="tag dark">Prototype Data</span></div>
+    <dl class="infof" id="info"></dl>
+  </section>
+  <section class="dcard" style="margin-top:22px" aria-labelledby="ms-t">
+    <h2 id="ms-t">Measurement Sessions</h2><p class="sub">Sessions belonging to this patient. Select View Session to review measurement data.</p>
+    <div class="tw"><table class="dt big"><thead><tr><th>Session ID</th><th>Date &amp; Time</th><th>Duration</th><th>Recording Status</th><th>Session Status</th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></div>
+    <p class="nores" id="none" hidden>No measurement sessions recorded for this patient yet.</p>
+    <div class="tfoot"><span id="count"></span><span>View Session opens Session Detail.</span></div>
+  </section>
+</div></main>
+<script src="assets/doctor.js"></script>
+<script>
+HD.shell("patients");
+var $=HD.$, E=HD.esc, id=HD.param("patient")||"P001", p=HD.patient(id);
+if(!p){
+  $("#root").innerHTML='<p class="crumbs"><a href="doctor-patients.html">Patients</a> <span>/</span> Patient Detail</p><section class="dcard msg" style="margin-top:22px"><h2>Patient not found</h2><p>This patient is not linked to your account. Please go back and choose a patient from the list.</p><a class="btn" href="doctor-patients.html">Back to Patients</a></section>';
+}else{
+  var ss=HD.sessionsOf(id), l=ss[0];
+  document.title=p[1]+" — HERTS Doctor Portal";
+  $("#name").textContent=p[1]; $("#pid").textContent=p[0];
+  $("#info").innerHTML=[["Patient Name",E(p[1])],["Patient ID",p[0]],["Latest Session ID",l?l[0]:"—"],["Latest Session Date & Time",l?HD.date(l[2])+", "+HD.time(l[3]):"—"],["Latest Session Status",HD.badge(l&&l[5])]].map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'}).join("");
+  $("#rows").innerHTML=ss.map(function(s){
+    return '<tr><td class="id">'+s[0]+'</td><td>'+HD.when(s)+'</td><td>'+HD.dur(s,true)+'</td><td>'+(s[5]==="active"?"In progress":"Available")+'</td><td>'+HD.badge(s[5])+'</td><td><a class="lnk" href="doctor-session-detail.html?session='+s[0]+'">View Session ▶</a></td></tr>'}).join("");
+  $("#none").hidden=ss.length>0;
+  $("#count").textContent="Showing "+ss.length+" session"+(ss.length===1?"":"s");
+}
+</script>
+</body>
+</html>

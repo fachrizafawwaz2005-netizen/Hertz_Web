@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doctor Overview — HERTS Doctor Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/patient-portal.css">
+<link rel="stylesheet" href="assets/doctor-portal.css">
+</head>
+<body>
+<main class="page dr"><div class="dp">
+  <h1>Doctor Overview</h1>
+  <p class="lede" id="today"></p>
+  <div class="stats" id="stats"></div>
+  <div class="dgrid">
+    <div class="dcol">
+      <section class="dcard" aria-labelledby="a-t" id="active-card">
+        <div class="head"><div><h2 id="a-t">Active Session</h2><p class="sub">Measurement session currently in progress.</p></div><span class="bdg active">Active</span></div>
+        <dl class="active-box" id="active-box"></dl>
+        <div class="actions" id="active-actions"></div>
+      </section>
+      <section class="dcard" aria-labelledby="r-t">
+        <h2 id="r-t">Recent Measurement Sessions</h2><p class="sub">Latest recorded sessions across your assigned patients.</p>
+        <div class="tw"><table class="dt"><thead><tr><th>Date &amp; Time</th><th>Patient</th><th>Session ID</th><th>Duration</th><th>Recording</th><th>Status</th><th><span style="position:absolute;left:-9999px">Action</span></th></tr></thead><tbody id="recent"></tbody></table></div>
+      </section>
+    </div>
+    <div class="dcol">
+      <section class="dcard" aria-labelledby="q-t"><h2 id="q-t">Quick Access</h2><p class="sub">Jump to your patients.</p>
+        <a class="qa" href="doctor-patients.html"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#071426" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="7" r="3.5"/><path d="M3.5 20v-1.5a5 5 0 0 1 5-5h3M17 14v6M14 17h6"/></svg><span><b>Patients</b><span id="qa-n"></span></span><em>Open ▶</em></a></section>
+      <section class="dcard" aria-labelledby="ap-t"><div class="head"><h2 id="ap-t">Assigned Patients</h2><a class="vall" href="doctor-patients.html">View all ▶</a></div><p class="sub">Latest session per patient.</p><ul class="ap" id="ap"></ul></section>
+    </div>
+  </div>
+  <section class="dcard about-d" aria-labelledby="ab-t"><img src="assets/icon-info.png" alt=""><div><b id="ab-t">About This Overview</b><p>This page summarizes monitoring records saved in HERTS. Visualizations and waveforms represent recorded electrical measurements and should not be interpreted as a diagnosis on their own.</p></div></section>
+</div></main>
+<script src="assets/doctor.js"></script>
+<script>
+HD.shell("overview");
+var $=HD.$, E=HD.esc;
+var all=HD_SESSIONS.slice().sort(function(a,b){return (b[2]+b[3])<(a[2]+a[3])?-1:1});
+var recent=all.slice(0,6), act=all.filter(function(s){return s[5]==="active"})[0];
+var today=all.filter(function(s){return s[2]===HD_TODAY});
+$("#today").textContent="Thursday, 15 October 2026 · Summary of your assigned patients and recent HERTS measurement sessions.";
+function st(l,n,s){return '<div><p>'+l+'</p><p class="n">'+n+'</p><p class="s">'+s+'</p></div>'}
+var nAct=today.filter(function(s){return s[5]==="active"}).length;
+$("#stats").innerHTML=st("Assigned Patients",HD_PATIENTS.length+" Patients","All linked to your account")+
+  st("Active Session",(act?1:0)+" Session","Currently in progress")+
+  st("Sessions Today",today.length+" Sessions",nAct+" active · "+(today.length-nAct)+" completed")+
+  st("Recent Sessions",recent.length+" Sessions","13 – 15 October 2026");
+$("#qa-n").textContent=HD_PATIENTS.length+" assigned patients";
+if(act){var p=HD.patient(act[1]);
+  $("#active-box").innerHTML=[["Patient",p[1]],["Patient ID",p[0]],["Session ID",act[0]],["Started · Duration",HD.time(act[3])+" · 02:14"]].map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+E(r[1])+'</dd></div>'}).join("");
+  $("#active-actions").innerHTML='<a class="btn sm" href="doctor-session-detail.html?session='+act[0]+'">View Session</a> <a class="btn sm grey" href="doctor-patient-detail.html?patient='+p[0]+'">Patient Detail</a>';
+}else{$("#active-box").outerHTML='<p class="nores">No session is currently in progress.</p>'}
+$("#recent").innerHTML=recent.map(function(s){var p=HD.patient(s[1]);
+  return '<tr><td>'+HD.when(s)+'</td><td class="pn">'+E(p[1])+'<br><small>'+p[0]+'</small></td><td class="sid">'+s[0]+'</td><td>'+HD.dur(s,true)+'</td><td>'+(s[5]==="active"?"In progress":"Available")+'</td><td>'+HD.badge(s[5])+'</td><td><a class="lnk" href="doctor-session-detail.html?session='+s[0]+'">View Session ▶</a></td></tr>'}).join("");
+$("#ap").innerHTML=HD_PATIENTS.map(function(p){var l=HD.latest(p[0]);
+  var d=l?HD.date(l[2]).replace(/ 2026$/,""):"";
+  return '<li><div><a href="doctor-patient-detail.html?patient='+p[0]+'">'+E(p[1])+'</a><small>'+p[0]+' · '+(l?l[0]+' · '+d:'No recent session')+'</small></div>'+(l?HD.badge(l[5]):'<span class="bdg dash">—</span>')+'</li>'}).join("");
+</script>
+</body>
+</html>

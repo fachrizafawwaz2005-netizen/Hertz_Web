@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session Detail — HERTS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/patient-portal.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="patient-monitoring.html" aria-label="HERTS — Monitoring"><img src="assets/herts-logo.png" alt="" width="132" height="78">HERTS</a>
+    <nav class="nav" aria-label="Main">
+      <a href="patient-monitoring.html">Monitoring</a>
+      <a href="patient-history.html" aria-current="page">History</a>
+    </nav>
+    <a class="user" href="patient-profile.html" aria-label="My profile"><span>Budi Artanto</span><img src="assets/avatar.png" alt="" width="45" height="45"></a>
+  </div>
+</header>
+
+<main class="page sd">
+  <a class="back" href="patient-history.html"><img src="assets/icon-back.png" alt="" width="22" height="18">Back to History</a>
+
+  <div class="sd-wrap">
+    <div class="sd-top">
+      <div class="sd-title">
+        <h1>Session Detail</h1>
+        <p>Session ID: <span id="sid">SES-001</span></p>
+      </div>
+      <span class="done" id="state">Completed</span>
+    </div>
+
+    <section class="sd-info" aria-labelledby="info-t">
+      <h2 id="info-t">Session Information</h2>
+      <dl>
+        <div><dt>Date</dt><dd id="i-date"></dd></div>
+        <div><dt>Start Time</dt><dd id="i-time"></dd></div>
+        <div><dt>Duration</dt><dd id="i-dur"></dd></div>
+        <div><dt>Recording</dt><dd id="i-rec"></dd></div>
+      </dl>
+    </section>
+
+    <div class="empty sd-msg" id="msg" hidden>
+      <h3 id="msg-t"></h3>
+      <p id="msg-p"></p>
+    </div>
+
+    <div class="cards sd-cards" id="records">
+
+      <!-- ===== Recorded visualization ===== -->
+      <section class="card" aria-labelledby="eit-t">
+        <div class="head">
+          <div>
+            <h2 id="eit-t">Recorded Hearts Visualization</h2>
+            <p class="sub">Displays the distribution of electrical impedance in the chest, measured through electrodes.</p>
+          </div>
+          <span class="pill">Budi</span>
+        </div>
+
+        <div class="viz">
+          <div class="frame plain"><img src="assets/eit-recorded.png" width="313" height="299" alt="Recorded chest impedance visualization: a circular chest cross-section coloured from purple to yellow, with small red electrode dots at its edge"></div>
+
+          <div class="side">
+            <div class="box"><span class="pill">Recorded Session</span><span class="pill" id="s-dur">Duration: 22 min</span></div>
+            <div class="box session">
+              <span class="pill">Session</span>
+              <dl class="meta">
+                <div><dt>Patient ID :</dt><dd>P001</dd></div>
+                <div><dt>Session ID :</dt><dd id="s-id">SES-001</dd></div>
+                <div><dt>Started at</dt><dd id="s-start">09:30 AM</dd></div>
+              </dl>
+            </div>
+          </div>
+
+          <div class="scale">
+            <div class="bar-grad" role="img" aria-label="Relative impedance scale from 0% to 100%"></div>
+            <div class="ticks"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+            <div class="explain">EIT shows the distribution of electrical impedance in your chest based on electrode measurements. Changes in the visualization can help monitor changes in the thoracic region.</div>
+          </div>
+
+          <div class="legend">
+            <p class="t">Relative Impedance Scale</p>
+            <p>0% — Lowest</p>
+            <p>50% — Mid-range</p>
+            <p>100% — Highest</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Electrocardiogram ===== -->
+      <section class="card ecg" aria-labelledby="ecg-t">
+        <div class="head">
+          <div><p class="small">Electrocardiogram</p><h2 id="ecg-t">Hearth Rhythm</h2></div>
+          <span class="pill">ECG</span>
+        </div>
+        <div class="ecg-strip"><img src="assets/ecg-strip.png" width="1126" height="150" alt="Recorded ECG waveform on a dark background showing repeating heartbeat peaks"></div>
+        <p class="cap">Recorded ECG waveform from this session.</p>
+        <div class="box hr"><h3>Heart rate</h3><p class="v"><b id="hr">87</b><span>bpm</span></p></div>
+      </section>
+
+      <!-- ===== About ===== -->
+      <section class="about" aria-labelledby="about-t">
+        <h2 id="about-t">About This Session <img src="assets/icon-info.png" alt="" width="21" height="20"></h2>
+        <p>This page shows the monitoring records saved during your selected session. The visualizations represent recorded electrical measurements and should not be interpreted as a diagnosis on their own.</p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="foot">
+    <div>
+      <div class="foot-logo"><img src="assets/herts-logo.png" alt="" width="132" height="78"><div><b>HERTS</b><span>CARDIAC MONITOR</span></div></div>
+      <p>High-speed Electrical Reconstruction Tomography System</p>
+      <p class="t">Continuous Cardiac Monitoring</p>
+      <p>Monitor heart activity and rhythm in real time through heart visualization.</p>
+    </div>
+    <nav aria-label="Footer"><h3>Navigasi</h3><ul><li><a href="index.html">Home</a></li><li><a href="information.html">Information</a></li><li><a href="information.html#how-it-works">Guide</a></li><li><a href="login.html">Login</a></li></ul></nav>
+    <div><h3>Kontak</h3><p class="mail">XXXXXXX@gmail.com</p></div>
+  </div>
+</footer>
+
+<script src="assets/sessions.js"></script>
+<script>
+var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var $ = function(id){ return document.getElementById(id); };
+function fmtDate(d){ var p = d.split("-"); return +p[2] + " " + MONTHS[+p[1]-1] + " " + p[0]; }
+function fmtTime(t){ var p = t.split(":"), h = +p[0]; return (h%12||12).toString().padStart(2,"0") + ":" + p[1] + " " + (h<12?"AM":"PM"); }
+
+var m = location.search.match(/[?&]session=([^&]+)/);
+var id = m ? decodeURIComponent(m[1]).toUpperCase() : "SES-001";
+var s = HERTS_SESSIONS.filter(function(r){ return r[0] === id; })[0];
+
+function showMsg(t, p){ $("records").hidden = true; $("msg").hidden = false; $("msg-t").textContent = t; $("msg-p").textContent = p; }
+
+if (!s) {
+  $("sid").textContent = id;
+  $("state").hidden = true;
+  document.querySelector(".sd-info").hidden = true;
+  showMsg("Session not found", "We could not find this session in your history. Please go back and choose a session from the list.");
+} else {
+  $("sid").textContent = s[0];
+  $("i-date").textContent = fmtDate(s[1]);
+  $("i-time").textContent = fmtTime(s[2]);
+  $("i-dur").textContent = s[3] + " Minutes";
+  $("i-rec").textContent = s[4] ? "Available" : "Unavailable";
+  $("s-id").textContent = s[0];
+  $("s-start").textContent = fmtTime(s[2]);
+  $("s-dur").textContent = "Duration: " + s[3] + " min";
+  document.title = "Session " + s[0] + " — HERTS";
+  if (s[4]) { $("hr").textContent = s[5]; }
+  else {
+    showMsg("Recording unavailable", "The recording for this session is not available, so no visualization or ECG can be shown.");
+  }
+}
+</script>
+</body>
+</html>

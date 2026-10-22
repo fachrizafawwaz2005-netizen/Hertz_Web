@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doctor Profile — HERTS Doctor Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/patient-portal.css">
+<link rel="stylesheet" href="assets/doctor-portal.css">
+</head>
+<body>
+<main class="page dr"><div class="dp">
+  <h1>Doctor Profile</h1>
+  <p class="lede">Manage your account information and preferences.</p>
+  <div class="pfgrid">
+    <div class="dcol">
+      <section class="dcard pfid" aria-label="Doctor identity"><div class="avatar" id="av"></div><div><h2 id="nm"></h2><p id="em"></p><span class="tag dark">Doctor</span></div></section>
+      <section class="dcard" aria-labelledby="ai-t">
+        <div class="head"><div><h2 id="ai-t">Account Information</h2><p class="sub">Your HERTS Doctor Portal account details.</p></div><span class="tag dark">Prototype Data</span></div>
+        <dl class="pfields" id="fields"></dl>
+      </section>
+      <section class="dcard" aria-labelledby="ac-t"><h2 id="ac-t">Account</h2><p class="sub">Sign out of the HERTS Doctor Portal.</p>
+        <div class="actions"><a class="btn ghost" href="login.html">Log Out</a></div></section>
+    </div>
+    <section class="dcard pref" aria-labelledby="pr-t">
+      <h2 id="pr-t">Preferences</h2><p class="sub">Prototype controls only.</p>
+      <h3>Notification Preferences</h3>
+      <div class="prow"><div id="l1">Session updates<small>Notify when a session starts or ends</small></div><button class="sw" type="button" role="switch" aria-checked="true" aria-labelledby="l1"></button></div>
+      <div class="prow"><div id="l2">Email notifications<small>Send updates to your account email</small></div><button class="sw" type="button" role="switch" aria-checked="false" aria-labelledby="l2"></button></div>
+      <h3 style="margin-top:18px">Display Preferences</h3>
+      <div class="prow"><span id="l3">Theme</span><div class="seg" role="group" aria-labelledby="l3"><button type="button" aria-pressed="true">Light</button><button type="button" aria-pressed="false">Dark</button></div></div>
+      <div class="prow" style="border-bottom:0"><span id="l4">Language</span><div class="seg" role="group" aria-labelledby="l4"><button type="button" aria-pressed="true">English</button><button type="button" aria-pressed="false">Indonesia</button></div></div>
+      <p class="note">Changes are not saved or applied yet — this is a frontend prototype.</p>
+    </section>
+  </div>
+</div></main>
+<script src="assets/doctor.js"></script>
+<script>
+HD.shell("profile");
+var $=HD.$;
+$("#av").textContent=HD_DOCTOR.ini; $("#nm").textContent=HD_DOCTOR.name; $("#em").textContent=HD_DOCTOR.email;
+$("#fields").innerHTML=[["Full Name",HD_DOCTOR.name],["Email Address",HD_DOCTOR.email],["Role","Doctor"],["Account ID",HD_DOCTOR.id]].map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'}).join("");
+document.querySelectorAll(".sw").forEach(function(b){b.addEventListener("click",function(){b.setAttribute("aria-checked",b.getAttribute("aria-checked")!=="true")})});
+document.querySelectorAll(".seg").forEach(function(g){g.querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){g.querySelectorAll("button").forEach(function(o){o.setAttribute("aria-pressed",o===b)})})})});
+</script>
+</body>
+</html>

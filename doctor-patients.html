@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patients — HERTS Doctor Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/patient-portal.css">
+<link rel="stylesheet" href="assets/doctor-portal.css">
+</head>
+<body>
+<main class="page dr"><div class="dp">
+  <h1>Patients</h1>
+  <p class="lede">View and manage patients assigned to your account.</p>
+  <section class="dcard pad" style="margin-top:22px" aria-label="Patient list">
+    <div class="tool">
+      <label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#071426" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search patient name or ID…" aria-label="Search patient name or ID" autocomplete="off"></label>
+      <div class="chips" role="group" aria-label="Filter patients">
+        <button class="chip" type="button" data-f="all" aria-pressed="true">All Patients</button>
+        <button class="chip" type="button" data-f="with" aria-pressed="false">With Sessions</button>
+        <button class="chip" type="button" data-f="none" aria-pressed="false">No Recent Session</button>
+      </div>
+    </div>
+    <div class="tw"><table class="dt big"><thead><tr><th>Patient ID</th><th>Patient Name</th><th>Latest Session</th><th>Last Session Date</th><th>Session Status</th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></div>
+    <p class="nores" id="none" hidden>No patients match your search.</p>
+    <div class="tfoot"><span id="count" role="status" aria-live="polite"></span><span>Only patients linked to your account are listed.</span></div>
+  </section>
+</div></main>
+<script src="assets/doctor.js"></script>
+<script>
+HD.shell("patients");
+var $=HD.$, E=HD.esc, filter="all";
+function render(){
+  var q=$("#q").value.trim().toLowerCase();
+  var rows=HD_PATIENTS.filter(function(p){
+    var l=HD.latest(p[0]);
+    return (!q||p[0].toLowerCase().indexOf(q)>-1||p[1].toLowerCase().indexOf(q)>-1)&&(filter==="all"||(filter==="with"?!!l:!l));
+  });
+  $("#rows").innerHTML=rows.map(function(p){var l=HD.latest(p[0]);
+    return '<tr><td class="id">'+p[0]+'</td><td><b>'+E(p[1])+'</b></td><td><b>'+(l?l[0]:'—')+'</b></td><td>'+(l?HD.when(l):'—')+'</td><td>'+HD.badge(l&&l[5])+'</td><td><a class="lnk" href="doctor-patient-detail.html?patient='+p[0]+'">View Details ▶</a></td></tr>'}).join("");
+  $("#none").hidden=rows.length>0;
+  $("#count").textContent="Showing "+rows.length+" of "+HD_PATIENTS.length+" assigned patients";
+}
+$("#q").addEventListener("input",render);
+document.querySelectorAll(".chip").forEach(function(b){b.addEventListener("click",function(){
+  filter=b.dataset.f;document.querySelectorAll(".chip").forEach(function(c){c.setAttribute("aria-pressed",c===b)});render()})});
+render();
+</script>
+</body>
+</html>
